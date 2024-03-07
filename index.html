@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    
+    <script type="module" crossorigin src="/goit-js-hw-12/commonHelpers.js"></script>
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-9310f15c.js">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/vendor-fd638ea2.css">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/index-328e0cea.css">
+  </head>
+  <body>
+    <form class="form">
+      <input
+        type="text"
+        name="search"
+        placeholder="What would you like to find?"
+        required
+      />
+      <button class="search-btn" type="submit">Search</button>
+    </form>
+
+    <div class="gallery-box">
+      <span class="loader"></span>
+      <ul class="gallery"></ul>
+    </div>
+
+    <button
+      type="button"
+      class="btn search-btn is-hidden"
+      data-action="load-more"
+    >Load More
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+  </body>
+</html>
