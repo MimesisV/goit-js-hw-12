@@ -122,6 +122,3 @@ loadMoreBtn.addEventListener('click', event => {
       hideLoader();
     });
 })
-
-console.log(1);
-
