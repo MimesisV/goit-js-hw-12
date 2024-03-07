@@ -91,12 +91,12 @@ form.addEventListener('submit', event => {
 
 let current_query;
 
-loadMoreBtn.addEventListener('click', event => {
+loadMoreBtn.addEventListener('click', async event => {
   searchParamsDefaults.page++;
   current_query = searchParamsDefaults.q;
   showLoader();
   const searchParams = new URLSearchParams(searchParamsDefaults);
-  fetchData(searchParams)
+  await fetchData(searchParams)
   .then(({data}) => {
     let {hits} = data;
     if (hits <= 0) {
