@@ -8,6 +8,7 @@ import fetchData from './js/pixabay-api.js'
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('.loader');
+const loadMoreBtn = document.querySelector('[data-action="load-more"]')
 
 const searchParamsDefaults = {
   key: '12371278-ee82e7e687c0227bfbef9a885',
@@ -15,6 +16,8 @@ const searchParamsDefaults = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
+  per_page: "15",
+  page: "1"
 };
 
 const lightbox = new SimpleLightbox('.gallery a', {
@@ -38,19 +41,29 @@ function hideLoader() {
   loader.style.display = 'none';
 }
 
-function searchImg(params) {
-  return fetchData(params)
-    .then(({ hits }) => {
-      if (hits.length > 0) {
-        makeMarkup (hits);
+function smoothScroll () {
+  const itemHeight = gallery.firstElementChild.getBoundingClientRect().height;
 
-        lightbox.refresh();
-      } else {
+  window.scrollBy({
+    top: 5 * itemHeight,
+    behavior: 'smooth',
+  })
+}
+
+async function searchImg(params) {
+  return await fetchData(params)
+    .then(({data}) => {
+      console.log(data);
+      let {hits} = data;
+      if (hits.length <= 0) {
         iziToast.error({
           position: 'topRight',
           message:
             'Sorry, there are no images matching your search query. Please try again!',
         });
+      } else {
+        makeMarkup (hits);  
+        lightbox.refresh();
       }
       })
       .catch(error => {
@@ -66,10 +79,48 @@ function searchImg(params) {
 
 form.addEventListener('submit', event => {
   event.preventDefault();
+  loadMoreBtn.classList.add('is-hidden')
   clearGallery()
   showLoader();
   searchParamsDefaults.q = event.target.elements.search.value.trim();
   const searchParams = new URLSearchParams(searchParamsDefaults);
   searchImg(searchParams);
+  loadMoreBtn.classList.remove('is-hidden')
   event.currentTarget.reset();
 });
+
+let current_query;
+
+loadMoreBtn.addEventListener('click', event => {
+  searchParamsDefaults.page++;
+  current_query = searchParamsDefaults.q;
+  showLoader();
+  const searchParams = new URLSearchParams(searchParamsDefaults);
+  fetchData(searchParams)
+  .then(({data}) => {
+    let {hits} = data;
+    if (hits <= 0) {
+      loadMoreBtn.classList.add('is-hidden')
+      iziToast.error({
+        position: 'topRight',
+        message:
+          "We're sorry, but you've reached the end of search results.",
+      });
+    } else {
+      makeMarkup (hits);  
+      lightbox.refresh();
+    }
+    })
+    .catch(error => {
+      iziToast.error({
+        position: 'topRight',
+        message:`Sorry there was an error: ${error}`,
+      });
+    })
+    .finally(() => {
+      smoothScroll();
+      hideLoader();
+    });
+})
+
+

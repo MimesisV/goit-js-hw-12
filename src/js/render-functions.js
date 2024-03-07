@@ -18,5 +18,5 @@ export default function makeMarkup (hits) {
         );
       }, '');
 
-      gallery.innerHTML = renderImg;
+      gallery.insertAdjacentHTML('beforeend', renderImg);
 }
