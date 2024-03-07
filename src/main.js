@@ -53,7 +53,6 @@ function smoothScroll () {
 async function searchImg(params) {
   return await fetchData(params)
     .then(({data}) => {
-      console.log(data);
       let {hits} = data;
       if (hits.length <= 0) {
         iziToast.error({
