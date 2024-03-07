@@ -61,6 +61,7 @@ async function searchImg(params) {
             'Sorry, there are no images matching your search query. Please try again!',
         });
       } else {
+        searchParamsDefaults.page = 1;
         makeMarkup (hits);  
         lightbox.refresh();
       }
