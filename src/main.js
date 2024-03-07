@@ -98,8 +98,10 @@ loadMoreBtn.addEventListener('click', async event => {
   const searchParams = new URLSearchParams(searchParamsDefaults);
   await fetchData(searchParams)
   .then(({data}) => {
-    let {hits} = data;
-    if (hits <= 0) {
+    let {hits, totalHits} = data;
+    let totalPage = Math.ceil(totalHits / 15);
+    
+    if (totalPage === searchParamsDefaults.page) {
       loadMoreBtn.classList.add('is-hidden')
       iziToast.error({
         position: 'topRight',
