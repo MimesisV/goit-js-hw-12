@@ -123,4 +123,5 @@ loadMoreBtn.addEventListener('click', event => {
     });
 })
 
+console.log(1);
 
