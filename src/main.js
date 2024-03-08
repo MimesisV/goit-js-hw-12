@@ -45,7 +45,7 @@ function smoothScroll () {
   const itemHeight = gallery.firstElementChild.getBoundingClientRect().height;
 
   window.scrollBy({
-    top: 3 * itemHeight,
+    top: 2 * itemHeight,
     behavior: 'smooth',
   })
 }
