@@ -50,6 +50,13 @@ function smoothScroll () {
   })
 }
 
+function errorMassage (error) {
+  iziToast.error({
+    position: 'topRight',
+    message: `Sorry there was an error: ${error}`,
+  });
+}
+
 async function searchImg(params) {
   try {
     showLoader();
@@ -67,10 +74,7 @@ async function searchImg(params) {
       lightbox.refresh();
     }
   } catch (error) {
-    iziToast.error({
-      position: 'topRight',
-      message: `Sorry there was an error: ${error}`,
-    });
+    errorMassage(error);
   } finally {
     hideLoader();
   }
@@ -120,10 +124,7 @@ loadMoreBtn.addEventListener('click', async event => {
       lightbox.refresh();
     }
   } catch (error) {
-    iziToast.error({
-      position: 'topRight',
-      message: `Sorry there was an error: ${error}`,
-    });
+    errorMassage(error);
   } finally {
     smoothScroll();
     hideLoader();
