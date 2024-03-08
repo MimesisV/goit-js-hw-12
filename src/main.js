@@ -16,8 +16,8 @@ const searchParamsDefaults = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  per_page: "15",
-  page: "1"
+  per_page: 15,
+  page: 1
 };
 
 const lightbox = new SimpleLightbox('.gallery a', {
@@ -45,47 +45,47 @@ function smoothScroll () {
   const itemHeight = gallery.firstElementChild.getBoundingClientRect().height;
 
   window.scrollBy({
-    top: 5 * itemHeight,
+    top: 3 * itemHeight,
     behavior: 'smooth',
   })
 }
 
 async function searchImg(params) {
-  return await fetchData(params)
-    .then(({data}) => {
-      let {hits} = data;
-      if (hits.length <= 0) {
-        iziToast.error({
-          position: 'topRight',
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-        });
-      } else {
-        searchParamsDefaults.page = 1;
-        makeMarkup (hits);  
-        lightbox.refresh();
-      }
-      })
-      .catch(error => {
-        iziToast.error({
-          position: 'topRight',
-          message:`Sorry there was an error: ${error}`,
-        });
-      })
-      .finally(() => {
-        hideLoader();
+  try {
+    showLoader();
+    const {data} = await fetchData(params);
+    let {hits} = data;
+    if (hits.length === 0) {
+      iziToast.error({
+        position: 'topRight',
+        message: 'Sorry, there are no images matching your search query. Please try again!',
       });
+    } else {
+      searchParamsDefaults.page = 1;
+      makeMarkup(hits);
+      loadMoreBtn.classList.remove('is-hidden')
+      lightbox.refresh();
+    }
+  } catch (error) {
+    iziToast.error({
+      position: 'topRight',
+      message: `Sorry there was an error: ${error}`,
+    });
+  } finally {
+    hideLoader();
+  }
 }
 
 form.addEventListener('submit', event => {
   event.preventDefault();
+  searchParamsDefaults.page = 1;
   loadMoreBtn.classList.add('is-hidden')
   clearGallery()
   showLoader();
   searchParamsDefaults.q = event.target.elements.search.value.trim();
   const searchParams = new URLSearchParams(searchParamsDefaults);
   searchImg(searchParams);
-  loadMoreBtn.classList.remove('is-hidden')
+
   event.currentTarget.reset();
 });
 
@@ -96,31 +96,37 @@ loadMoreBtn.addEventListener('click', async event => {
   current_query = searchParamsDefaults.q;
   showLoader();
   const searchParams = new URLSearchParams(searchParamsDefaults);
-  await fetchData(searchParams)
-  .then(({data}) => {
-    let {hits, totalHits} = data;
+  
+  try {
+    const { data } = await fetchData(searchParams);
+    let { hits, totalHits } = data;
     let totalPage = Math.ceil(totalHits / 15);
     
-    if (totalPage === searchParamsDefaults.page) {
-      loadMoreBtn.classList.add('is-hidden')
-      iziToast.error({
-        position: 'topRight',
-        message:
-          "We're sorry, but you've reached the end of search results.",
-      });
+    if (hits.length === 0 || totalPage === searchParamsDefaults.page) {
+      loadMoreBtn.classList.add('is-hidden');
+      if (hits.length === 0) {
+        iziToast.error({
+          position: 'topRight',
+          message: "We're sorry, but no results were found.",
+        });
+      } else {
+        iziToast.error({
+          position: 'topRight',
+          message: "We're sorry, but you've reached the end of search results.",
+        });
+      }
     } else {
-      makeMarkup (hits);  
+      makeMarkup(hits);  
       lightbox.refresh();
     }
-    })
-    .catch(error => {
-      iziToast.error({
-        position: 'topRight',
-        message:`Sorry there was an error: ${error}`,
-      });
-    })
-    .finally(() => {
-      smoothScroll();
-      hideLoader();
+  } catch (error) {
+    iziToast.error({
+      position: 'topRight',
+      message: `Sorry there was an error: ${error}`,
     });
-})
+  } finally {
+    smoothScroll();
+    hideLoader();
+  }
+});
+
